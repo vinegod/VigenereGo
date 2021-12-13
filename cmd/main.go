@@ -1,0 +1,41 @@
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"vigenerecode/vigenere"
+)
+
+func main() {
+
+	arguments := os.Args
+
+	if len(arguments) != 4 {
+		fmt.Println("Usage: vigenerecode [-e|-d] [path to text] [path to key]")
+		return
+	}
+	var mode int
+	switch arguments[1] {
+	case "-e":
+		mode = 1
+	case "-d":
+		mode = -1
+	}
+
+	text, err := os.ReadFile(arguments[2])
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	key, err := os.ReadFile(arguments[3])
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	vin := vigenere.Vigenere{Text: text, Key: key}
+	_, text = vin.Encode(mode)
+	fmt.Println(string(text))
+}
