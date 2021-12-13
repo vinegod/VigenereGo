@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"vigenerecode/vigenere"
+	"github.com/vinegod/vigenerecode/vigenere"
 )
 
 func main() {
