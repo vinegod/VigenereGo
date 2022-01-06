@@ -15,13 +15,6 @@ func main() {
 		fmt.Println("Usage: vigenerecode [-e|-d] [path to text] [path to key]")
 		return
 	}
-	var mode int
-	switch arguments[1] {
-	case "-e":
-		mode = 1
-	case "-d":
-		mode = -1
-	}
 
 	text, err := os.ReadFile(arguments[2])
 	if err != nil {
@@ -35,7 +28,14 @@ func main() {
 		return
 	}
 
-	vin := vigenere.Vigenere{Text: text, Key: key}
-	_, text = vin.Encode(mode)
-	fmt.Println(string(text))
+	vin := vigenere.Vigenere{Key: key}
+	switch arguments[1] {
+	case "-e":
+		_, text = vin.Encode(text)
+		fmt.Println(string(text))
+	case "-d":
+		_, text = vin.Decode(text)
+		fmt.Println(string(text))
+	}
+
 }

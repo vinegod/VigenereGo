@@ -1,60 +1,39 @@
 package vigenere
 
-import "strings"
-
-const (
-	alphabet    = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-	alphabetLen = 52
+import (
+	"bytes"
 )
 
 type Vigenere struct {
-	Text []byte
-	Key  []byte
+	Key []byte
 }
 
-func (v *Vigenere) Encode(mode int) (n int, text []byte) {
+func (v *Vigenere) code(s []byte, mode int) (n int, text []byte) {
+	str := PrepapeString(s)
+	keyLen := len(v.Key)
 
-	textLen, keyLen := v.Len()
-	text = make([]byte, textLen)
-
-	v.byteToIndex()
-
-	for i, char := range v.Text {
-		text[i] = (alphabetLen + char + byte(1*mode)*v.Key[i%keyLen]) % alphabetLen
-	}
-	indexToByte(text)
-
-	return textLen, text
-
-}
-
-func (v *Vigenere) Len() (t, k int) {
-	t = len(v.Text)
-	k = len(v.Key)
-	return
-}
-
-func byteToIndex(b []byte) {
-	for i, char := range b {
-		if char == ' ' {
-			b[i] = ' '
-		} else {
-			b[i] = byte(strings.IndexByte(alphabet, char))
+	for i, char := range str {
+		num := int(char-'a') + mode*(int(v.Key[i%keyLen])-'a')
+		num = 97 + num%26
+		if num < 97 {
+			num += 26
 		}
+		str[i] = byte(num)
 	}
+	return len(str), str
 }
 
-func indexToByte(b []byte) {
-	for i, char := range b {
-		if char == ' ' {
-			b[i] = ' '
-		} else {
-			b[i] = alphabet[char]
-		}
-	}
+func (v *Vigenere) Encode(s []byte) (n int, text []byte) {
+	return v.code(s, 1)
 }
 
-func (v *Vigenere) byteToIndex() {
-	byteToIndex(v.Text)
-	byteToIndex(v.Key)
+func (v *Vigenere) Decode(s []byte) (n int, text []byte) {
+	return v.code(s, -1)
+}
+
+func PrepapeString(s []byte) []byte {
+	for _, c := range []byte{' ', ',', '.', '?', '!', '-'} {
+		s = bytes.ReplaceAll(s, []byte{c}, []byte{})
+	}
+	return bytes.ToLower(s)
 }
